@@ -1,20 +1,19 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const cors = require("cors");
+import express from "express";
+import mongoose from "mongoose";
+import cors from "cors";
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 
-// 🔴 Pega aquí tu cadena de MongoDB
+// -------- CONEXIÓN A MONGODB --------
 mongoose.connect(
-  "mongodb+srv://jordy:s1i2l3v4a5@cluster0.sqhfwwz.mongodb.net/invernadero?retryWrites=true&w=majority"
+  "mongodb+srv://jordy:si1213yla4s@cluster0.sqhfwvz.mongodb.net/invernadero?retryWrites=true&w=majority&appName=Cluster0"
 )
-.then(() => console.log("MongoDB conectado"))
-.catch(err => console.error("Error al conectar MongoDB:", err));
+  .then(() => console.log("MongoDB conectado"))
+  .catch(err => console.error("Error al conectar MongoDB:", err));
 
-
-// Esquema para los datos
+// -------- ESQUEMA --------
 const DataSchema = new mongoose.Schema({
   temp: Number,
   hum: Number,
@@ -25,7 +24,7 @@ const DataSchema = new mongoose.Schema({
 
 const Data = mongoose.model("Data", DataSchema);
 
-// Ruta para guardar datos
+// -------- RUTA PARA GUARDAR DATOS --------
 app.post("/api/data", async (req, res) => {
   try {
     const nuevo = new Data(req.body);
@@ -36,15 +35,17 @@ app.post("/api/data", async (req, res) => {
   }
 });
 
-// Ruta para leer datos
+// -------- RUTA PARA LEER DATOS --------
 app.get("/api/data", async (req, res) => {
   const datos = await Data.find().sort({ timestamp: -1 }).limit(50);
   res.json(datos);
 });
 
+// -------- RUTA PRINCIPAL --------
 app.get("/", (req, res) => {
   res.send("API funcionando correctamente");
 });
 
-app.listen(3000, () => console.log("Servidor iniciado en puerto 3000"));
-
+// -------- PUERTO --------
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Servidor iniciado en puerto ${PORT}`));
